@@ -384,3 +384,4 @@ fun ShowProgress(totalQuestions: Int, currentQuestionNo: Int) {
 }
 //TODO 1: son soru hemen 100% oluyor
 //TODO 2: devam sadece dogruysa
+//TODO 3:
