@@ -1,5 +1,6 @@
 package com.ykp.DiniBilmece.component
 
+import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -118,140 +119,159 @@ fun QuestionDisplay(
         ) {
             ShowProgress(questionsSize, questionIndex.value)
             QuestionTracker(questionIndex.value, questionsSize)
+
+
             DrawDottedLine(pathEffect = pathEffect)
+            if (correctAnswerState.value == true && questionIndex.value == 122) {
+                Text(text = "You Win")
+                buttonBehavior(
+                    "yeniden başlat", Modifier
+                        .padding(top = 15.dp)
+                ) {
+                    questionIndex.value = 0
 
-            Column {
-                Text(
-                    text = question.question, //the question element of the question object
-                    modifier = Modifier
-                        .padding(6.dp)
-                        .heightIn(30.dp, 90.dp),
-                    fontSize = 17.sp,
-                    color = AppColors.mOffWhite,
-                    fontWeight = FontWeight.Bold,
-                    lineHeight = 22.sp
-                )
-
-                //for each choice
-                choicesState.forEachIndexed { index, answerText ->
-                    Row(
-                        modifier = Modifier
-                            .padding(7.dp)
-                            .fillMaxWidth()
-                            .heightIn(
-                                40.dp,
-                                120.dp
-                            )
-                            .border(
-                                width = 4.dp, brush = Brush.linearGradient(
-                                    colors = listOf(
-                                        AppColors.mDarkPurple,
-                                        AppColors.mOffDarkPurple
-                                    )
-                                ),
-                                shape = RoundedCornerShape(15.dp)
-                            )
-                            .clip(
-                                RoundedCornerShape(
-                                    topStartPercent = 50,
-                                    topEndPercent = 50,
-                                    bottomEndPercent = 50,
-                                    bottomStartPercent = 50
-                                )
-                            )
-                            .background(
-                                if (correctAnswerState.value == true
-                                    && index == selectedAnswerState.value
-                                ) {
-                                    Color.Green.copy(alpha = 0.2f)
-                                } else if (correctAnswerState.value == false
-                                    && index == selectedAnswerState.value
-                                ) {
-                                    Color.Red.copy(alpha = 0.2f)
-
-                                } else {
-                                    Color.Transparent
-                                }
-                            ),
-                        verticalAlignment = CenterVertically
-                    )
-                    {
-                        RadioButton(
-                            //marked as selected after click in Button
-                            selected = (selectedAnswerState.value == index),
-                            onClick = {
-                                updateAnswer(index)
-                            },
-                            modifier = Modifier.padding(start = 16.dp),
-                            colors = RadioButtonDefaults.colors(
-
-                                //if correct, then green, otherwise red
-                                selectedColor = if (correctAnswerState.value == true
-                                    && index == selectedAnswerState.value
-                                ) {
-                                    Color.Green.copy(alpha = 0.2f)
-                                } else {
-                                    Color.Red.copy(alpha = 0.2f)
-
-                                }
-                            )
-                        )//end Radiobutton
-
-                        val annotatedString = buildAnnotatedString {
-                            withStyle(
-                                style = SpanStyle(
-                                    fontWeight = FontWeight.Light,
-                                    color = if (correctAnswerState.value == true && index == selectedAnswerState.value) {
-                                        Color.Green.copy(alpha = 0.7f)
-                                    } else if (correctAnswerState.value == false && index == selectedAnswerState.value) {
-                                        Color.LightGray.copy(alpha = 0.5f)
-                                    } else {
-                                        AppColors.mOffWhite
-                                    },
-                                    fontSize = 17.sp
-                                )
-                            ) {
-
-                                append(answerText)
-                            }
-                        }
-                        Text(text = annotatedString, modifier = Modifier.padding(6.dp))
-                    }
                 }
+
+            } else {
+                Column {
+                    Text(
+                        text = question.question, //the question element of the question object
+                        modifier = Modifier
+                            .padding(6.dp)
+                            .heightIn(30.dp, 90.dp),
+                        fontSize = 17.sp,
+                        color = AppColors.mOffWhite,
+                        fontWeight = FontWeight.Bold,
+                        lineHeight = 22.sp
+                    )
+
+                    //for each choice
+                    choicesState.forEachIndexed { index, answerText ->
+                        Row(
+                            modifier = Modifier
+                                .padding(7.dp)
+                                .fillMaxWidth()
+                                .heightIn(
+                                    40.dp,
+                                    120.dp
+                                )
+                                .border(
+                                    width = 4.dp, brush = Brush.linearGradient(
+                                        colors = listOf(
+                                            AppColors.mDarkPurple,
+                                            AppColors.mOffDarkPurple
+                                        )
+                                    ),
+                                    shape = RoundedCornerShape(15.dp)
+                                )
+                                .clip(
+                                    RoundedCornerShape(
+                                        topStartPercent = 50,
+                                        topEndPercent = 50,
+                                        bottomEndPercent = 50,
+                                        bottomStartPercent = 50
+                                    )
+                                )
+                                .background(
+                                    if (correctAnswerState.value == true
+                                        && index == selectedAnswerState.value
+                                    ) {
+                                        Color.Green.copy(alpha = 0.2f)
+                                    } else if (correctAnswerState.value == false
+                                        && index == selectedAnswerState.value
+                                    ) {
+                                        Color.Red.copy(alpha = 0.2f)
+
+                                    } else {
+                                        Color.Transparent
+                                    }
+                                ),
+                            verticalAlignment = CenterVertically
+                        )
+                        {
+                            RadioButton(
+                                //marked as selected after click in Button
+                                selected = (selectedAnswerState.value == index),
+                                onClick = {
+                                    updateAnswer(index)
+                                },
+                                modifier = Modifier.padding(start = 16.dp),
+                                colors = RadioButtonDefaults.colors(
+
+                                    //if correct, then green, otherwise red
+                                    selectedColor = if (correctAnswerState.value == true
+                                        && index == selectedAnswerState.value
+                                    ) {
+                                        Color.Green.copy(alpha = 0.2f)
+                                    } else {
+                                        Color.Red.copy(alpha = 0.2f)
+
+                                    }
+                                )
+                            )//end Radiobutton
+
+                            val annotatedString = buildAnnotatedString {
+                                withStyle(
+                                    style = SpanStyle(
+                                        fontWeight = FontWeight.Light,
+                                        color = if (correctAnswerState.value == true && index == selectedAnswerState.value) {
+                                            Color.Green.copy(alpha = 0.7f)
+                                        } else if (correctAnswerState.value == false && index == selectedAnswerState.value) {
+                                            Color.LightGray.copy(alpha = 0.5f)
+                                        } else {
+                                            AppColors.mOffWhite
+                                        },
+                                        fontSize = 17.sp
+                                    )
+                                ) {
+
+                                    append(answerText)
+                                }
+                            }
+                            Text(text = annotatedString, modifier = Modifier.padding(6.dp))
+                        }
+                    }
 //--------------------BUTTON--------------------------------------------------------------------
 
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceAround
-                ) {
-                    if (questionIndex.value == 122) {
-                        buttonBehavior(
-                            "yeniden başlat", Modifier
-                                .padding(top = 15.dp)
-                        ) {
-                            questionIndex.value = 0
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceAround
+                    ) {
+                        if (questionIndex.value != questionsSize) {
+                            buttonBehavior(
+                                "Devam", Modifier
+                                    .padding(top = 15.dp)
+                            ) {
+                                if (questionIndex.value < questionsSize - 1) {
+                                    questionIndex.value += 1
 
+                                    Log.d("nixmachen", "${questionIndex.value}")
+                                }
+                            }
 
-                        }
-                    }
-                    if (questionIndex.value != 122) {
-                        buttonBehavior(
-                            "Devam", Modifier
-                                .padding(top = 15.dp)
-                        ) {
-                            if (questionIndex.value in 0 until questionsSize - 1) {
-                                questionIndex.value += 1
+                            buttonBehavior(
+                                "test", Modifier
+                                    .padding(top = 15.dp)
+                            ) {
+                                if (questionIndex.value < questionsSize) {
+                                    questionIndex.value += 120
+                                }
                             }
                         }
                     }
+
+
                 }
-
-
             }
         }
         //END of GUI content---------------------------------------------------------
     }
+}
+
+@Composable
+fun WinScreen() {
+    Text(text = "You Win")
 }
 
 @Composable
