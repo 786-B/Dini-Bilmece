@@ -1,13 +1,17 @@
 package com.ykp.DiniBilmece.component
 
 import android.util.Log
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Celebration
 import androidx.compose.material3.*
 import androidx.compose.material3.ButtonDefaults.buttonColors
+import androidx.compose.material3.ButtonDefaults.elevatedShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -21,6 +25,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.text.*
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextIndent
@@ -122,18 +127,32 @@ fun QuestionDisplay(
 
 
             DrawDottedLine(pathEffect = pathEffect)
-            if (correctAnswerState.value == true && questionIndex.value == 122) {
-                Text(text = "You Win")
-                buttonBehavior(
-                    "yeniden başlat", Modifier
-                        .padding(top = 15.dp)
+            if (correctAnswerState.value == true && questionIndex.value == questionsSize - 1) {
+                Column(
+                    modifier = Modifier.fillMaxHeight(),
+                    horizontalAlignment = CenterHorizontally
                 ) {
-                    questionIndex.value = 0
+                    Text(
+                        text = "tebrikler", color = AppColors.mLightGray,
+                        modifier = Modifier.padding(10.dp),
+                        fontStyle = FontStyle.Italic,
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 4.sp,
+                        fontSize = 30.sp
+                    )
+                    Icon(Icons.Filled.Celebration, "celebration", modifier = Modifier.size(170.dp))
+                    buttonBehavior(
+                        "yeniden başlat", Modifier
+                            .padding(top = 25.dp), Color.Red.copy(0.3f)
+                    ) {
+                        questionIndex.value = 0
 
+                    }
                 }
 
+
             } else {
-                Column {
+                Column(horizontalAlignment = CenterHorizontally) {
                     Text(
                         text = question.question, //the question element of the question object
                         modifier = Modifier
@@ -142,7 +161,8 @@ fun QuestionDisplay(
                         fontSize = 17.sp,
                         color = AppColors.mOffWhite,
                         fontWeight = FontWeight.Bold,
-                        lineHeight = 22.sp
+                        lineHeight = 22.sp,
+                        textAlign = TextAlign.Center
                     )
 
                     //for each choice
@@ -156,20 +176,21 @@ fun QuestionDisplay(
                                     120.dp
                                 )
                                 .border(
-                                    width = 4.dp, brush = Brush.linearGradient(
+                                    width = 2.dp, brush = Brush.linearGradient(
                                         colors = listOf(
-                                            AppColors.mDarkPurple,
-                                            AppColors.mOffDarkPurple
+                                            AppColors.mLightGray.copy(0.7f),
+                                            AppColors.mLightGray.copy(0.3f)
                                         )
                                     ),
-                                    shape = RoundedCornerShape(15.dp)
+                                    shape = RoundedCornerShape(topStartPercent = 70, bottomStartPercent = 70,
+                                    topEndPercent = 5, bottomEndPercent = 5)
                                 )
                                 .clip(
                                     RoundedCornerShape(
-                                        topStartPercent = 50,
-                                        topEndPercent = 50,
-                                        bottomEndPercent = 50,
-                                        bottomStartPercent = 50
+                                        topStartPercent = 60,
+                                        topEndPercent = 5,
+                                        bottomEndPercent = 5,
+                                        bottomStartPercent = 60
                                     )
                                 )
                                 .background(
@@ -228,7 +249,7 @@ fun QuestionDisplay(
                                     append(answerText)
                                 }
                             }
-                            Text(text = annotatedString, modifier = Modifier.padding(6.dp))
+                            Text(text = annotatedString, modifier = Modifier.padding(5.dp))
                         }
                     }
 //--------------------BUTTON--------------------------------------------------------------------
@@ -240,13 +261,11 @@ fun QuestionDisplay(
                     ) {
                         if (questionIndex.value != questionsSize) {
                             buttonBehavior(
-                                "Devam", Modifier
+                                "devam", Modifier
                                     .padding(top = 15.dp)
                             ) {
                                 if (questionIndex.value < questionsSize - 1) {
                                     questionIndex.value += 1
-
-                                    Log.d("nixmachen", "${questionIndex.value}")
                                 }
                             }
 
@@ -270,20 +289,33 @@ fun QuestionDisplay(
 }
 
 @Composable
-fun WinScreen() {
-    Text(text = "You Win")
-}
-
-@Composable
-fun buttonBehavior(buttonText: String, modifier: Modifier = Modifier, onClicked: () -> Unit) {
+fun buttonBehavior(
+    buttonText: String,
+    modifier: Modifier = Modifier,
+    buttonColor: Color = Color.Green.copy(0.18f),
+    onClicked: () -> Unit
+) {
     Button(
         onClick = { onClicked.invoke() },
         modifier = modifier,
-        // padding(top = 15.dp).align(alignment = Alignment.CenterHorizontally),
-        // enabled = (correctAnswerState.value == true),
-        shape = RoundedCornerShape(35.dp),
+        shape = RoundedCornerShape(
+            topStartPercent = 20,
+            bottomStartPercent = 20,
+            bottomEndPercent = 45,
+            topEndPercent = 45
+        ),
         colors = ButtonDefaults.buttonColors(
-            containerColor = AppColors.mLightBlue
+            containerColor = buttonColor
+        ),
+        border = BorderStroke(
+            2.dp, brush = Brush.linearGradient(
+                colors = listOf(
+                    AppColors.mLightGray,
+                    AppColors.mLightGray,
+                    AppColors.mOffWhite,
+                    AppColors.mLightGray
+                )
+            )
         )
     ) {
         Text(
@@ -349,7 +381,7 @@ fun ShowProgress(totalQuestions: Int, currentQuestionNo: Int) {
 
     val gradient = Brush.linearGradient(
         listOf(
-            Color(0xFFF95075), Color(0xFFBE6BE5)
+            Color(0xF27FCA63), Color(0xE943B043)
         )
     )
 
@@ -359,11 +391,11 @@ fun ShowProgress(totalQuestions: Int, currentQuestionNo: Int) {
             .fillMaxWidth()
             .height(45.dp)
             .border(
-                width = 4.dp,
+                width = 3.dp,
                 brush = Brush.linearGradient(
                     colors = listOf(
-                        AppColors.mLightGray,
-                        AppColors.mBlack,
+                        Color.LightGray.copy(0.7f),
+                        AppColors.mBlack.copy(0.7f),
                     )
                 ), shape = RoundedCornerShape(34.dp)
             )
@@ -402,6 +434,5 @@ fun ShowProgress(totalQuestions: Int, currentQuestionNo: Int) {
     }
 
 }
-//TODO 1: son soru hemen 100% oluyor
-//TODO 2: devam sadece dogruysa
-//TODO 3:
+
+//TODO: Exit Button
