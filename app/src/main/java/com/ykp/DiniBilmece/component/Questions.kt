@@ -1,17 +1,16 @@
 package com.ykp.DiniBilmece.component
 
-import android.util.Log
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.activity.ComponentActivity
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Celebration
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.material3.ButtonDefaults.buttonColors
-import androidx.compose.material3.ButtonDefaults.elevatedShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -24,10 +23,14 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.*
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextIndent
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -92,6 +95,8 @@ fun QuestionDisplay(
         mutableStateOf<Boolean?>(value = null)
     }
 
+    val activity = (LocalLifecycleOwner.current as ComponentActivity)
+
     //end of declaration-------------------------------------------------
 
 
@@ -148,6 +153,13 @@ fun QuestionDisplay(
                         questionIndex.value = 0
 
                     }
+                    buttonBehavior(
+                        buttonText = "kapat", Modifier
+                            .padding(top = 25.dp), Color.Red.copy(0.3f),
+                        Icons.Filled.Close
+                    ) {
+                        activity.finish()
+                    }
                 }
 
 
@@ -156,9 +168,9 @@ fun QuestionDisplay(
                     Text(
                         text = question.question, //the question element of the question object
                         modifier = Modifier
-                            .padding(6.dp)
-                            .heightIn(30.dp, 90.dp),
-                        fontSize = 17.sp,
+                            .padding(top = 17.dp, bottom = 9.dp)
+                            .heightIn(29.dp, 91.dp),
+                        fontSize = 19.sp,
                         color = AppColors.mOffWhite,
                         fontWeight = FontWeight.Bold,
                         lineHeight = 22.sp,
@@ -172,25 +184,32 @@ fun QuestionDisplay(
                                 .padding(7.dp)
                                 .fillMaxWidth()
                                 .heightIn(
-                                    40.dp,
-                                    120.dp
+                                    39.dp,
+                                    121.dp
                                 )
                                 .border(
-                                    width = 2.dp, brush = Brush.linearGradient(
+                                    width = if (index == selectedAnswerState.value) {
+                                        0.dp
+                                    } else {
+                                        2.dp
+                                    },
+                                    brush = Brush.linearGradient(
                                         colors = listOf(
                                             AppColors.mLightGray.copy(0.7f),
                                             AppColors.mLightGray.copy(0.3f)
                                         )
                                     ),
-                                    shape = RoundedCornerShape(topStartPercent = 70, bottomStartPercent = 70,
-                                    topEndPercent = 5, bottomEndPercent = 5)
+                                    shape = RoundedCornerShape(
+                                        topStartPercent = 21, bottomStartPercent = 21,
+                                        topEndPercent = 21, bottomEndPercent = 21
+                                    )
                                 )
                                 .clip(
                                     RoundedCornerShape(
-                                        topStartPercent = 60,
-                                        topEndPercent = 5,
-                                        bottomEndPercent = 5,
-                                        bottomStartPercent = 60
+                                        topStartPercent = 21,
+                                        topEndPercent = 21,
+                                        bottomEndPercent = 21,
+                                        bottomStartPercent = 21
                                     )
                                 )
                                 .background(
@@ -206,50 +225,49 @@ fun QuestionDisplay(
                                     } else {
                                         Color.Transparent
                                     }
-                                ),
-                            verticalAlignment = CenterVertically
-                        )
-                        {
-                            RadioButton(
-                                //marked as selected after click in Button
-                                selected = (selectedAnswerState.value == index),
-                                onClick = {
+                                )
+                                .clickable {
+
                                     updateAnswer(index)
                                 },
-                                modifier = Modifier.padding(start = 16.dp),
-                                colors = RadioButtonDefaults.colors(
-
-                                    //if correct, then green, otherwise red
-                                    selectedColor = if (correctAnswerState.value == true
-                                        && index == selectedAnswerState.value
-                                    ) {
-                                        Color.Green.copy(alpha = 0.2f)
-                                    } else {
-                                        Color.Red.copy(alpha = 0.2f)
-
-                                    }
-                                )
-                            )//end Radiobutton
-
+                            horizontalArrangement = Arrangement.Center
+                        )
+                        {
                             val annotatedString = buildAnnotatedString {
                                 withStyle(
                                     style = SpanStyle(
                                         fontWeight = FontWeight.Light,
                                         color = if (correctAnswerState.value == true && index == selectedAnswerState.value) {
-                                            Color.Green.copy(alpha = 0.7f)
+                                            Color.Green.copy(0.6f)
                                         } else if (correctAnswerState.value == false && index == selectedAnswerState.value) {
                                             Color.LightGray.copy(alpha = 0.5f)
                                         } else {
                                             AppColors.mOffWhite
                                         },
-                                        fontSize = 17.sp
+                                        fontSize = 17.sp,
                                     )
                                 ) {
 
                                     append(answerText)
                                 }
                             }
-                            Text(text = annotatedString, modifier = Modifier.padding(5.dp))
+                            Text(
+                                text = annotatedString,
+                                modifier = Modifier.padding(5.dp),
+                                fontFamily = if (index == selectedAnswerState.value && correctAnswerState.value == true) {
+                                    FontFamily.Monospace
+                                } else {
+                                    FontFamily.Default
+                                },
+                                textDecoration = if (index == selectedAnswerState.value && correctAnswerState.value == false) {
+                                    TextDecoration.LineThrough
+                                } else if (index == selectedAnswerState.value && correctAnswerState.value == true) {
+                                    TextDecoration.Underline
+                                } else {
+                                    TextDecoration.None
+                                },
+                                textAlign = TextAlign.Center
+                            )
                         }
                     }
 //--------------------BUTTON--------------------------------------------------------------------
@@ -293,16 +311,17 @@ fun buttonBehavior(
     buttonText: String,
     modifier: Modifier = Modifier,
     buttonColor: Color = Color.Green.copy(0.18f),
+    icon: ImageVector = Icons.Default.ArrowForward,
     onClicked: () -> Unit
 ) {
     Button(
         onClick = { onClicked.invoke() },
         modifier = modifier,
         shape = RoundedCornerShape(
-            topStartPercent = 20,
-            bottomStartPercent = 20,
-            bottomEndPercent = 45,
-            topEndPercent = 45
+            topStartPercent = 40,
+            bottomStartPercent = 40,
+            bottomEndPercent = 40,
+            topEndPercent = 40
         ),
         colors = ButtonDefaults.buttonColors(
             containerColor = buttonColor
@@ -324,10 +343,14 @@ fun buttonBehavior(
             color = AppColors.mOffWhite,
             fontSize = 17.sp
         )
+        Icon(
+            icon,
+            contentDescription = null
+        )
+
 
     }
 }
-
 
 @Composable
 fun QuestionTracker(
@@ -356,7 +379,7 @@ fun QuestionTracker(
                 }
             }
 
-        }, modifier = Modifier.padding(20.dp)
+        }, modifier = Modifier.padding(11.dp)
     )
 }
 
@@ -374,6 +397,11 @@ fun DrawDottedLine(pathEffect: PathEffect) {
             pathEffect = pathEffect
         )
     }
+}
+
+@Composable
+fun CloseWindow(activity: ComponentActivity) {
+    activity.finish()
 }
 
 @Composable
@@ -435,4 +463,3 @@ fun ShowProgress(totalQuestions: Int, currentQuestionNo: Int) {
 
 }
 
-//TODO: Exit Button
