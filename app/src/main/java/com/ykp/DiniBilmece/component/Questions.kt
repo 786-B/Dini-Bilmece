@@ -5,10 +5,7 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.Celebration
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.material3.ButtonDefaults.buttonColors
 import androidx.compose.runtime.Composable
@@ -48,7 +45,7 @@ fun Question(viewModel: QuestionsViewModel) {
         mutableStateOf(0)
     }
     if (viewModel.data.value.loading == true) {
-        CircularProgressIndicator(modifier = Modifier.size(50.dp))
+        CircularProgressIndicator(modifier = Modifier.size(30.dp))
     } else {
         val question = try {
             questions?.get(questionIndex.value)
@@ -76,7 +73,6 @@ fun QuestionDisplay(
     questionIndex: MutableState<Int>,
     viewModel: QuestionsViewModel,
     questionsSize: Int,
-    // onNextClicked: (Int) -> Unit = {}
 ) {
     //declation--------------------------------------------------
 
@@ -146,16 +142,16 @@ fun QuestionDisplay(
                         fontSize = 30.sp
                     )
                     Icon(Icons.Filled.Celebration, "celebration", modifier = Modifier.size(170.dp))
-                    buttonBehavior(
-                        "yeniden başlat", Modifier
-                            .padding(top = 25.dp), Color.Red.copy(0.3f)
+                    ButtonBehavior(
+                        "tekrar", Modifier
+                            .padding(top = 25.dp), Color.Green.copy(0.1f), Icons.Filled.RestartAlt
                     ) {
                         questionIndex.value = 0
 
                     }
-                    buttonBehavior(
+                    ButtonBehavior(
                         buttonText = "kapat", Modifier
-                            .padding(top = 25.dp), Color.Red.copy(0.3f),
+                            .padding(top = 25.dp), Color.LightGray.copy(0.3f),
                         Icons.Filled.Close
                     ) {
                         activity.finish()
@@ -277,22 +273,13 @@ fun QuestionDisplay(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceAround
                     ) {
-                        if (questionIndex.value != questionsSize) {
-                            buttonBehavior(
+                        if (questionIndex.value != questionsSize && correctAnswerState.value == true) {
+                            ButtonBehavior(
                                 "devam", Modifier
                                     .padding(top = 15.dp)
                             ) {
                                 if (questionIndex.value < questionsSize - 1) {
                                     questionIndex.value += 1
-                                }
-                            }
-
-                            buttonBehavior(
-                                "test", Modifier
-                                    .padding(top = 15.dp)
-                            ) {
-                                if (questionIndex.value < questionsSize) {
-                                    questionIndex.value += 120
                                 }
                             }
                         }
@@ -306,12 +293,14 @@ fun QuestionDisplay(
     }
 }
 
+
+//---------Buttons----------------------------------------------------------------------------
 @Composable
-fun buttonBehavior(
+fun ButtonBehavior(
     buttonText: String,
     modifier: Modifier = Modifier,
     buttonColor: Color = Color.Green.copy(0.18f),
-    icon: ImageVector = Icons.Default.ArrowForward,
+    icon: ImageVector = Icons.Filled.DoubleArrow,
     onClicked: () -> Unit
 ) {
     Button(
@@ -323,7 +312,7 @@ fun buttonBehavior(
             bottomEndPercent = 40,
             topEndPercent = 40
         ),
-        colors = ButtonDefaults.buttonColors(
+        colors = buttonColors(
             containerColor = buttonColor
         ),
         border = BorderStroke(
@@ -337,21 +326,23 @@ fun buttonBehavior(
             )
         )
     ) {
+        Icon(
+            icon,
+            contentDescription = null,
+            tint = Color.LightGray.copy(0.7f)
+        )
         Text(
             text = buttonText,
             modifier = Modifier.padding(5.dp),
             color = AppColors.mOffWhite,
             fontSize = 17.sp
         )
-        Icon(
-            icon,
-            contentDescription = null
-        )
 
 
     }
 }
 
+//----Question tracker----------------------------------------------------------------
 @Composable
 fun QuestionTracker(
     counter: Int = 10, outOf: Int = 100
@@ -383,6 +374,7 @@ fun QuestionTracker(
     )
 }
 
+//----dotted line---------------------------------------------------------
 @Composable
 fun DrawDottedLine(pathEffect: PathEffect) {
     Canvas(
@@ -399,11 +391,7 @@ fun DrawDottedLine(pathEffect: PathEffect) {
     }
 }
 
-@Composable
-fun CloseWindow(activity: ComponentActivity) {
-    activity.finish()
-}
-
+//--------Progress bar--------------------------------------------------------------
 @Composable
 fun ShowProgress(totalQuestions: Int, currentQuestionNo: Int) {
 
