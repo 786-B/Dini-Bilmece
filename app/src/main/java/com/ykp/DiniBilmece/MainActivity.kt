@@ -10,7 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.ykp.DiniBilmece.screens.TriviaHome
-import com.ykp.DiniBilmece.ui.theme.JetTriviaTheme
+import com.ykp.DiniBilmece.ui.theme.DiniBilmeceTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -18,7 +18,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            JetTriviaTheme {
+            DiniBilmeceTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -35,7 +35,7 @@ class MainActivity : ComponentActivity() {
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
-    JetTriviaTheme {
+    DiniBilmeceTheme {
 
     }
 }
