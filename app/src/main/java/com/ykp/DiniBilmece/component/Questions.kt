@@ -58,7 +58,6 @@ fun Question(viewModel: QuestionsViewModel) {
             QuestionDisplay(
                 question = question!!,
                 questionIndex = questionIndex,
-                viewModel = viewModel,
                 questionsSize = questions.size
             )
         }
@@ -71,8 +70,7 @@ fun Question(viewModel: QuestionsViewModel) {
 fun QuestionDisplay(
     question: QuestionItem,
     questionIndex: MutableState<Int>,
-    viewModel: QuestionsViewModel,
-    questionsSize: Int,
+    questionsSize: Int
 ) {
     //declation--------------------------------------------------
 
