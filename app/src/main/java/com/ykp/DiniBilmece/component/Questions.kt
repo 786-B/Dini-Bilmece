@@ -1,10 +1,11 @@
 package com.ykp.DiniBilmece.component
 
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.activity.ComponentActivity
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.material3.ButtonDefaults.buttonColors
 import androidx.compose.runtime.Composable
@@ -19,9 +20,14 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.*
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextIndent
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,7 +45,7 @@ fun Question(viewModel: QuestionsViewModel) {
         mutableStateOf(0)
     }
     if (viewModel.data.value.loading == true) {
-        CircularProgressIndicator(modifier = Modifier.size(50.dp))
+        CircularProgressIndicator(modifier = Modifier.size(30.dp))
     } else {
         val question = try {
             questions?.get(questionIndex.value)
@@ -67,7 +73,6 @@ fun QuestionDisplay(
     questionIndex: MutableState<Int>,
     viewModel: QuestionsViewModel,
     questionsSize: Int,
-    // onNextClicked: (Int) -> Unit = {}
 ) {
     //declation--------------------------------------------------
 
@@ -85,6 +90,8 @@ fun QuestionDisplay(
     val correctAnswerState = remember(question) {
         mutableStateOf<Boolean?>(value = null)
     }
+
+    val activity = (LocalLifecycleOwner.current as ComponentActivity)
 
     //end of declaration-------------------------------------------------
 
@@ -118,154 +125,212 @@ fun QuestionDisplay(
         ) {
             ShowProgress(questionsSize, questionIndex.value)
             QuestionTracker(questionIndex.value, questionsSize)
+
+
             DrawDottedLine(pathEffect = pathEffect)
-
-            Column {
-                Text(
-                    text = question.question, //the question element of the question object
-                    modifier = Modifier
-                        .padding(6.dp)
-                        .heightIn(30.dp, 90.dp),
-                    fontSize = 17.sp,
-                    color = AppColors.mOffWhite,
-                    fontWeight = FontWeight.Bold,
-                    lineHeight = 22.sp
-                )
-
-                //for each choice
-                choicesState.forEachIndexed { index, answerText ->
-                    Row(
-                        modifier = Modifier
-                            .padding(7.dp)
-                            .fillMaxWidth()
-                            .heightIn(
-                                40.dp,
-                                120.dp
-                            )
-                            .border(
-                                width = 4.dp, brush = Brush.linearGradient(
-                                    colors = listOf(
-                                        AppColors.mDarkPurple,
-                                        AppColors.mOffDarkPurple
-                                    )
-                                ),
-                                shape = RoundedCornerShape(15.dp)
-                            )
-                            .clip(
-                                RoundedCornerShape(
-                                    topStartPercent = 50,
-                                    topEndPercent = 50,
-                                    bottomEndPercent = 50,
-                                    bottomStartPercent = 50
-                                )
-                            )
-                            .background(
-                                if (correctAnswerState.value == true
-                                    && index == selectedAnswerState.value
-                                ) {
-                                    Color.Green.copy(alpha = 0.2f)
-                                } else if (correctAnswerState.value == false
-                                    && index == selectedAnswerState.value
-                                ) {
-                                    Color.Red.copy(alpha = 0.2f)
-
-                                } else {
-                                    Color.Transparent
-                                }
-                            ),
-                        verticalAlignment = CenterVertically
+            if (correctAnswerState.value == true && questionIndex.value == questionsSize - 1) {
+                Column(
+                    modifier = Modifier.fillMaxHeight(),
+                    horizontalAlignment = CenterHorizontally
+                ) {
+                    Text(
+                        text = "tebrikler", color = AppColors.mLightGray,
+                        modifier = Modifier.padding(10.dp),
+                        fontStyle = FontStyle.Italic,
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 4.sp,
+                        fontSize = 30.sp
                     )
-                    {
-                        RadioButton(
-                            //marked as selected after click in Button
-                            selected = (selectedAnswerState.value == index),
-                            onClick = {
-                                updateAnswer(index)
-                            },
-                            modifier = Modifier.padding(start = 16.dp),
-                            colors = RadioButtonDefaults.colors(
+                    Icon(Icons.Filled.Celebration, "celebration", modifier = Modifier.size(170.dp))
+                    ButtonBehavior(
+                        "tekrar", Modifier
+                            .padding(top = 25.dp), Color.Green.copy(0.1f), Icons.Filled.RestartAlt
+                    ) {
+                        questionIndex.value = 0
 
-                                //if correct, then green, otherwise red
-                                selectedColor = if (correctAnswerState.value == true
-                                    && index == selectedAnswerState.value
-                                ) {
-                                    Color.Green.copy(alpha = 0.2f)
-                                } else {
-                                    Color.Red.copy(alpha = 0.2f)
-
-                                }
-                            )
-                        )//end Radiobutton
-
-                        val annotatedString = buildAnnotatedString {
-                            withStyle(
-                                style = SpanStyle(
-                                    fontWeight = FontWeight.Light,
-                                    color = if (correctAnswerState.value == true && index == selectedAnswerState.value) {
-                                        Color.Green.copy(alpha = 0.7f)
-                                    } else if (correctAnswerState.value == false && index == selectedAnswerState.value) {
-                                        Color.LightGray.copy(alpha = 0.5f)
-                                    } else {
-                                        AppColors.mOffWhite
-                                    },
-                                    fontSize = 17.sp
-                                )
-                            ) {
-
-                                append(answerText)
-                            }
-                        }
-                        Text(text = annotatedString, modifier = Modifier.padding(6.dp))
+                    }
+                    ButtonBehavior(
+                        buttonText = "kapat", Modifier
+                            .padding(top = 25.dp), Color.LightGray.copy(0.3f),
+                        Icons.Filled.Close
+                    ) {
+                        activity.finish()
                     }
                 }
+
+
+            } else {
+                Column(horizontalAlignment = CenterHorizontally) {
+                    Text(
+                        text = question.question, //the question element of the question object
+                        modifier = Modifier
+                            .padding(top = 17.dp, bottom = 9.dp)
+                            .heightIn(29.dp, 91.dp),
+                        fontSize = 19.sp,
+                        color = AppColors.mOffWhite,
+                        fontWeight = FontWeight.Bold,
+                        lineHeight = 22.sp,
+                        textAlign = TextAlign.Center
+                    )
+
+                    //for each choice
+                    choicesState.forEachIndexed { index, answerText ->
+                        Row(
+                            modifier = Modifier
+                                .padding(7.dp)
+                                .fillMaxWidth()
+                                .heightIn(
+                                    39.dp,
+                                    121.dp
+                                )
+                                .border(
+                                    width = if (index == selectedAnswerState.value) {
+                                        0.dp
+                                    } else {
+                                        2.dp
+                                    },
+                                    brush = Brush.linearGradient(
+                                        colors = listOf(
+                                            AppColors.mLightGray.copy(0.7f),
+                                            AppColors.mLightGray.copy(0.3f)
+                                        )
+                                    ),
+                                    shape = RoundedCornerShape(
+                                        topStartPercent = 21, bottomStartPercent = 21,
+                                        topEndPercent = 21, bottomEndPercent = 21
+                                    )
+                                )
+                                .clip(
+                                    RoundedCornerShape(
+                                        topStartPercent = 21,
+                                        topEndPercent = 21,
+                                        bottomEndPercent = 21,
+                                        bottomStartPercent = 21
+                                    )
+                                )
+                                .background(
+                                    if (correctAnswerState.value == true
+                                        && index == selectedAnswerState.value
+                                    ) {
+                                        Color.Green.copy(alpha = 0.2f)
+                                    } else if (correctAnswerState.value == false
+                                        && index == selectedAnswerState.value
+                                    ) {
+                                        Color.Red.copy(alpha = 0.2f)
+
+                                    } else {
+                                        Color.Transparent
+                                    }
+                                )
+                                .clickable {
+
+                                    updateAnswer(index)
+                                },
+                            horizontalArrangement = Arrangement.Center
+                        )
+                        {
+                            val annotatedString = buildAnnotatedString {
+                                withStyle(
+                                    style = SpanStyle(
+                                        fontWeight = FontWeight.Light,
+                                        color = if (correctAnswerState.value == true && index == selectedAnswerState.value) {
+                                            Color.Green.copy(0.6f)
+                                        } else if (correctAnswerState.value == false && index == selectedAnswerState.value) {
+                                            Color.LightGray.copy(alpha = 0.5f)
+                                        } else {
+                                            AppColors.mOffWhite
+                                        },
+                                        fontSize = 17.sp,
+                                    )
+                                ) {
+
+                                    append(answerText)
+                                }
+                            }
+                            Text(
+                                text = annotatedString,
+                                modifier = Modifier.padding(5.dp),
+                                fontFamily = if (index == selectedAnswerState.value && correctAnswerState.value == true) {
+                                    FontFamily.Monospace
+                                } else {
+                                    FontFamily.Default
+                                },
+                                textDecoration = if (index == selectedAnswerState.value && correctAnswerState.value == false) {
+                                    TextDecoration.LineThrough
+                                } else if (index == selectedAnswerState.value && correctAnswerState.value == true) {
+                                    TextDecoration.Underline
+                                } else {
+                                    TextDecoration.None
+                                },
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
 //--------------------BUTTON--------------------------------------------------------------------
 
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceAround
-                ) {
-                    if (questionIndex.value == 122) {
-                        buttonBehavior(
-                            "yeniden başlat", Modifier
-                                .padding(top = 15.dp)
-                        ) {
-                            questionIndex.value = 0
-
-
-                        }
-                    }
-                    if (questionIndex.value != 122) {
-                        buttonBehavior(
-                            "Devam", Modifier
-                                .padding(top = 15.dp)
-                        ) {
-                            if (questionIndex.value in 0 until questionsSize - 1) {
-                                questionIndex.value += 1
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceAround
+                    ) {
+                        if (questionIndex.value != questionsSize && correctAnswerState.value == true) {
+                            ButtonBehavior(
+                                "devam", Modifier
+                                    .padding(top = 15.dp)
+                            ) {
+                                if (questionIndex.value < questionsSize - 1) {
+                                    questionIndex.value += 1
+                                }
                             }
                         }
                     }
+
+
                 }
-
-
             }
         }
         //END of GUI content---------------------------------------------------------
     }
 }
 
+
+//---------Buttons----------------------------------------------------------------------------
 @Composable
-fun buttonBehavior(buttonText: String, modifier: Modifier = Modifier, onClicked: () -> Unit) {
+fun ButtonBehavior(
+    buttonText: String,
+    modifier: Modifier = Modifier,
+    buttonColor: Color = Color.Green.copy(0.18f),
+    icon: ImageVector = Icons.Filled.DoubleArrow,
+    onClicked: () -> Unit
+) {
     Button(
         onClick = { onClicked.invoke() },
         modifier = modifier,
-        // padding(top = 15.dp).align(alignment = Alignment.CenterHorizontally),
-        // enabled = (correctAnswerState.value == true),
-        shape = RoundedCornerShape(35.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = AppColors.mLightBlue
+        shape = RoundedCornerShape(
+            topStartPercent = 40,
+            bottomStartPercent = 40,
+            bottomEndPercent = 40,
+            topEndPercent = 40
+        ),
+        colors = buttonColors(
+            containerColor = buttonColor
+        ),
+        border = BorderStroke(
+            2.dp, brush = Brush.linearGradient(
+                colors = listOf(
+                    AppColors.mLightGray,
+                    AppColors.mLightGray,
+                    AppColors.mOffWhite,
+                    AppColors.mLightGray
+                )
+            )
         )
     ) {
+        Icon(
+            icon,
+            contentDescription = null,
+            tint = Color.LightGray.copy(0.7f)
+        )
         Text(
             text = buttonText,
             modifier = Modifier.padding(5.dp),
@@ -273,10 +338,11 @@ fun buttonBehavior(buttonText: String, modifier: Modifier = Modifier, onClicked:
             fontSize = 17.sp
         )
 
+
     }
 }
 
-
+//----Question tracker----------------------------------------------------------------
 @Composable
 fun QuestionTracker(
     counter: Int = 10, outOf: Int = 100
@@ -304,10 +370,11 @@ fun QuestionTracker(
                 }
             }
 
-        }, modifier = Modifier.padding(20.dp)
+        }, modifier = Modifier.padding(11.dp)
     )
 }
 
+//----dotted line---------------------------------------------------------
 @Composable
 fun DrawDottedLine(pathEffect: PathEffect) {
     Canvas(
@@ -324,12 +391,13 @@ fun DrawDottedLine(pathEffect: PathEffect) {
     }
 }
 
+//--------Progress bar--------------------------------------------------------------
 @Composable
 fun ShowProgress(totalQuestions: Int, currentQuestionNo: Int) {
 
     val gradient = Brush.linearGradient(
         listOf(
-            Color(0xFFF95075), Color(0xFFBE6BE5)
+            Color(0xF27FCA63), Color(0xE943B043)
         )
     )
 
@@ -339,11 +407,11 @@ fun ShowProgress(totalQuestions: Int, currentQuestionNo: Int) {
             .fillMaxWidth()
             .height(45.dp)
             .border(
-                width = 4.dp,
+                width = 3.dp,
                 brush = Brush.linearGradient(
                     colors = listOf(
-                        AppColors.mLightGray,
-                        AppColors.mBlack,
+                        Color.LightGray.copy(0.7f),
+                        AppColors.mBlack.copy(0.7f),
                     )
                 ), shape = RoundedCornerShape(34.dp)
             )
@@ -382,5 +450,4 @@ fun ShowProgress(totalQuestions: Int, currentQuestionNo: Int) {
     }
 
 }
-//TODO 1: son soru hemen 100% oluyor
-//TODO 2: devam sadece dogruysa
+
