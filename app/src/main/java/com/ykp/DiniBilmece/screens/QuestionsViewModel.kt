@@ -17,7 +17,7 @@ class QuestionsViewModel @Inject constructor(private val repository: QuestionRep
 
     val data: MutableState<DataOrException<ArrayList<QuestionItem>, Boolean, Exception>> =
         mutableStateOf(
-            DataOrException(null, true, Exception(""))
+            DataOrException(null, true, true, Exception(""))
         )
 
     init {
@@ -30,7 +30,6 @@ class QuestionsViewModel @Inject constructor(private val repository: QuestionRep
             data.value = repository.getAllQuestions()
 
             if (data.value.toString().isNotEmpty()) data.value.loading = false
-
 
         }
     }

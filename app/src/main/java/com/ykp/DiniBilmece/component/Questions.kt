@@ -41,11 +41,15 @@ fun Question(viewModel: QuestionsViewModel) {
 
     //declaration----------------------------------------------
     val questions = viewModel.data.value.data?.toMutableList()
+    val networkAvailable = viewModel.data.value.connection
     val questionIndex = remember {
         mutableStateOf(0)
     }
     if (viewModel.data.value.loading == true) {
         CircularProgressIndicator(modifier = Modifier.size(30.dp))
+        if(networkAvailable!=true){
+            Icon(Icons.Filled.NoCell, "celebration", modifier = Modifier.size(170.dp))
+        }
     } else {
         val question = try {
             questions?.get(questionIndex.value)
