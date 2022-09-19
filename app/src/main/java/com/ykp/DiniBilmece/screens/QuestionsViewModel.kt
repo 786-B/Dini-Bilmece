@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ykp.DiniBilmece.data.DataOrException
 import com.ykp.DiniBilmece.model.QuestionItem
+import com.ykp.DiniBilmece.network.checkNetworkState
 import com.ykp.DiniBilmece.repository.QuestionRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -17,7 +18,7 @@ class QuestionsViewModel @Inject constructor(private val repository: QuestionRep
 
     val data: MutableState<DataOrException<ArrayList<QuestionItem>, Boolean, Exception>> =
         mutableStateOf(
-            DataOrException(null, true, true, Exception(""))
+            DataOrException(null, true, Exception(""))
         )
 
     init {

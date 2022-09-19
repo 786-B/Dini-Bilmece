@@ -1,5 +1,6 @@
 package com.ykp.DiniBilmece.component
 
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -12,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -20,8 +22,10 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.*
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
@@ -32,24 +36,51 @@ import androidx.compose.ui.text.style.TextIndent
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ykp.DiniBilmece.model.QuestionItem
+import com.ykp.DiniBilmece.network.checkNetworkState
 import com.ykp.DiniBilmece.screens.QuestionsViewModel
 import com.ykp.DiniBilmece.util.AppColors
+import com.ykp.IslamicSkillCheck.R
 import kotlin.math.roundToInt
 
 @Composable
 fun Question(viewModel: QuestionsViewModel) {
 
     //declaration----------------------------------------------
+    val networkAvailable = checkNetworkState()
     val questions = viewModel.data.value.data?.toMutableList()
-    val networkAvailable = viewModel.data.value.connection
     val questionIndex = remember {
         mutableStateOf(0)
     }
+    if (!networkAvailable && questions == null) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+                .fillMaxSize(),
+            horizontalAlignment = CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.signal_disconnected),
+                "disconnected",
+                modifier = Modifier
+                    .size(90.dp),
+            )
+            Text(text = "Bağlantı yok", fontSize = 30.sp)
+            ButtonBehavior(
+                buttonText = "Yeniden dene",
+                modifier = Modifier.padding(37.dp),
+                buttonColor = Color.Gray,
+                icon = Icons.Default.Cached
+            ) {
+
+            }
+        }
+    }
+
     if (viewModel.data.value.loading == true) {
         CircularProgressIndicator(modifier = Modifier.size(30.dp))
-        if(networkAvailable!=true){
-            Icon(Icons.Filled.NoCell, "celebration", modifier = Modifier.size(170.dp))
-        }
+
     } else {
         val question = try {
             questions?.get(questionIndex.value)
@@ -67,6 +98,7 @@ fun Question(viewModel: QuestionsViewModel) {
         }
 
     }
+
 }
 
 //@Preview
