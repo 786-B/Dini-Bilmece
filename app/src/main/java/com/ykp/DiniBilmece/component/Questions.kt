@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ykp.DiniBilmece.model.QuestionItem
 import com.ykp.DiniBilmece.network.checkNetworkState
+import com.ykp.DiniBilmece.screens.NoInternet
 import com.ykp.DiniBilmece.screens.QuestionsViewModel
 import com.ykp.DiniBilmece.util.AppColors
 import com.ykp.IslamicSkillCheck.R
@@ -52,30 +53,7 @@ fun Question(viewModel: QuestionsViewModel) {
         mutableStateOf(0)
     }
     if (!networkAvailable && questions == null) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight()
-                .fillMaxSize(),
-            horizontalAlignment = CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.signal_disconnected),
-                "disconnected",
-                modifier = Modifier
-                    .size(90.dp),
-            )
-            Text(text = "Bağlantı yok", fontSize = 30.sp)
-            ButtonBehavior(
-                buttonText = "Yeniden dene",
-                modifier = Modifier.padding(37.dp),
-                buttonColor = Color.Gray,
-                icon = Icons.Default.Cached
-            ) {
-
-            }
-        }
+        NoInternet()
     }
 
     if (viewModel.data.value.loading == true) {
