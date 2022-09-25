@@ -9,7 +9,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.ykp.DiniBilmece.screens.TriviaHome
+import com.ykp.DiniBilmece.screens.BilmeceHome
 import com.ykp.DiniBilmece.ui.theme.DiniBilmeceTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -24,7 +24,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    TriviaHome()
+                    BilmeceHome()
                 }
             }
         }

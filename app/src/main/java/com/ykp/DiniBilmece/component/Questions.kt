@@ -9,11 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.material3.ButtonDefaults.buttonColors
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -22,7 +18,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
@@ -37,23 +32,23 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ykp.DiniBilmece.model.QuestionItem
 import com.ykp.DiniBilmece.network.checkNetworkState
-import com.ykp.DiniBilmece.screens.NoInternet
+import com.ykp.DiniBilmece.screens.BilmeceHome
 import com.ykp.DiniBilmece.screens.QuestionsViewModel
 import com.ykp.DiniBilmece.util.AppColors
 import com.ykp.IslamicSkillCheck.R
+import kotlinx.coroutines.delay
 import kotlin.math.roundToInt
 
 @Composable
 fun Question(viewModel: QuestionsViewModel) {
 
     //declaration----------------------------------------------
-    val networkAvailable = checkNetworkState()
+    // var networkAvailable = checkNetworkState()
+
+
     val questions = viewModel.data.value.data?.toMutableList()
     val questionIndex = remember {
         mutableStateOf(0)
-    }
-    if (!networkAvailable && questions == null) {
-        NoInternet()
     }
 
     if (viewModel.data.value.loading == true) {
