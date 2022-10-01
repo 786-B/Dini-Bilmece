@@ -43,12 +43,14 @@ import kotlin.math.roundToInt
 fun Question(viewModel: QuestionsViewModel) {
 
     //declaration----------------------------------------------
-    // var networkAvailable = checkNetworkState()
-
 
     val questions = viewModel.data.value.data?.toMutableList()
     val questionIndex = remember {
         mutableStateOf(0)
+    }
+
+    if (viewModel.getUserScore() != null && viewModel.getUserScore().toString().isNotEmpty()) {
+        questionIndex.value = viewModel.getUserScore()
     }
 
     if (viewModel.data.value.loading == true) {
@@ -66,7 +68,8 @@ fun Question(viewModel: QuestionsViewModel) {
             QuestionDisplay(
                 question = question!!,
                 questionIndex = questionIndex,
-                questionsSize = questions.size
+                questionsSize = questions.size,
+                viewModel = viewModel
             )
         }
 
@@ -79,9 +82,9 @@ fun Question(viewModel: QuestionsViewModel) {
 fun QuestionDisplay(
     question: QuestionItem,
     questionIndex: MutableState<Int>,
-    questionsSize: Int
+    questionsSize: Int,
+    viewModel: QuestionsViewModel
 ) {
-    //declation--------------------------------------------------
 
     //list of choices
     val choicesState = remember(question) {
@@ -131,8 +134,8 @@ fun QuestionDisplay(
             horizontalAlignment = CenterHorizontally
         ) {
             ShowProgress(questionsSize, questionIndex.value)
-            QuestionTracker(questionIndex.value, questionsSize)
 
+            QuestionTracker(questionIndex.value, questionsSize)
 
             DrawDottedLine(pathEffect = pathEffect)
             if (correctAnswerState.value == true && questionIndex.value == questionsSize - 1) {
@@ -154,6 +157,7 @@ fun QuestionDisplay(
                             .padding(top = 25.dp), Color.Green.copy(0.1f), Icons.Filled.RestartAlt
                     ) {
                         questionIndex.value = 0
+                        viewModel.storeScore(0)
 
                     }
                     ButtonBehavior(
@@ -287,6 +291,7 @@ fun QuestionDisplay(
                             ) {
                                 if (questionIndex.value < questionsSize - 1) {
                                     questionIndex.value += 1
+                                    viewModel.storeScore(questionIndex.value)
                                 }
                             }
                         }
