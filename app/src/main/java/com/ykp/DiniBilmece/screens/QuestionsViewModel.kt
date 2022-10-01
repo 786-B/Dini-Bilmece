@@ -27,6 +27,9 @@ class QuestionsViewModel @Inject constructor(
     }
 
     fun getUserScore(): Int = runBlocking {
+        if (datastoreRepository.getScore(USER_SCORE) == null) {
+            datastoreRepository.putScore(USER_SCORE, 0)
+        }
         datastoreRepository.getScore(USER_SCORE)!!
     }
 
@@ -50,10 +53,6 @@ class QuestionsViewModel @Inject constructor(
             data.value = repository.getAllQuestions()
 
             if (data.value.toString().isNotEmpty()) data.value.loading = false
-            if(getUserScore()== null || getUserScore().toString().isEmpty()){
-                storeScore(0)
-            }
-
 
         }
     }

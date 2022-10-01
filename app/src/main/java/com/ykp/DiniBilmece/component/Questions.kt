@@ -49,11 +49,11 @@ fun Question(viewModel: QuestionsViewModel) {
         mutableStateOf(0)
     }
 
-        questionIndex.value = viewModel.getUserScore()
-
+    questionIndex.value = viewModel.getUserScore()
 
     if (viewModel.data.value.loading == true) {
         CircularProgressIndicator(modifier = Modifier.size(30.dp))
+
 
     } else {
         val question = try {
