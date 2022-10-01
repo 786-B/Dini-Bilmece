@@ -1,5 +1,6 @@
 package com.ykp.DiniBilmece.component
 
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -8,10 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.material3.ButtonDefaults.buttonColors
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -22,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.*
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
@@ -32,20 +31,31 @@ import androidx.compose.ui.text.style.TextIndent
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ykp.DiniBilmece.model.QuestionItem
+import com.ykp.DiniBilmece.network.checkNetworkState
+import com.ykp.DiniBilmece.screens.BilmeceHome
 import com.ykp.DiniBilmece.screens.QuestionsViewModel
 import com.ykp.DiniBilmece.util.AppColors
+import com.ykp.IslamicSkillCheck.R
+import kotlinx.coroutines.delay
 import kotlin.math.roundToInt
 
 @Composable
 fun Question(viewModel: QuestionsViewModel) {
 
     //declaration----------------------------------------------
+
     val questions = viewModel.data.value.data?.toMutableList()
     val questionIndex = remember {
         mutableStateOf(0)
     }
+
+    if (viewModel.getUserScore() != null && viewModel.getUserScore().toString().isNotEmpty()) {
+        questionIndex.value = viewModel.getUserScore()
+    }
+
     if (viewModel.data.value.loading == true) {
         CircularProgressIndicator(modifier = Modifier.size(30.dp))
+
     } else {
         val question = try {
             questions?.get(questionIndex.value)
@@ -58,11 +68,13 @@ fun Question(viewModel: QuestionsViewModel) {
             QuestionDisplay(
                 question = question!!,
                 questionIndex = questionIndex,
-                questionsSize = questions.size
+                questionsSize = questions.size,
+                viewModel = viewModel
             )
         }
 
     }
+
 }
 
 //@Preview
@@ -70,9 +82,9 @@ fun Question(viewModel: QuestionsViewModel) {
 fun QuestionDisplay(
     question: QuestionItem,
     questionIndex: MutableState<Int>,
-    questionsSize: Int
+    questionsSize: Int,
+    viewModel: QuestionsViewModel
 ) {
-    //declation--------------------------------------------------
 
     //list of choices
     val choicesState = remember(question) {
@@ -122,8 +134,8 @@ fun QuestionDisplay(
             horizontalAlignment = CenterHorizontally
         ) {
             ShowProgress(questionsSize, questionIndex.value)
-            QuestionTracker(questionIndex.value, questionsSize)
 
+            QuestionTracker(questionIndex.value, questionsSize)
 
             DrawDottedLine(pathEffect = pathEffect)
             if (correctAnswerState.value == true && questionIndex.value == questionsSize - 1) {
@@ -145,6 +157,7 @@ fun QuestionDisplay(
                             .padding(top = 25.dp), Color.Green.copy(0.1f), Icons.Filled.RestartAlt
                     ) {
                         questionIndex.value = 0
+                        viewModel.storeScore(0)
 
                     }
                     ButtonBehavior(
@@ -278,6 +291,7 @@ fun QuestionDisplay(
                             ) {
                                 if (questionIndex.value < questionsSize - 1) {
                                     questionIndex.value += 1
+                                    viewModel.storeScore(questionIndex.value)
                                 }
                             }
                         }

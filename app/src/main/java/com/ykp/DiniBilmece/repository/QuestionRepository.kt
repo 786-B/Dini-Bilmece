@@ -1,18 +1,19 @@
 package com.ykp.DiniBilmece.repository
-
 import android.util.Log
 import com.ykp.DiniBilmece.data.DataOrException
 import com.ykp.DiniBilmece.model.QuestionItem
 import com.ykp.DiniBilmece.network.QuestionApi
 import javax.inject.Inject
 
-class QuestionRepository @Inject constructor(private val api: QuestionApi) {
+
+class QuestionRepository @Inject constructor(
+    private val api: QuestionApi
+) {
 
     private val dataOrException =
         DataOrException<ArrayList<QuestionItem>,
                 Boolean,
                 Exception>()
-
     suspend fun getAllQuestions(): DataOrException<ArrayList<QuestionItem>,
             Boolean,
             java.lang.Exception> {
