@@ -49,9 +49,8 @@ fun Question(viewModel: QuestionsViewModel) {
         mutableStateOf(0)
     }
 
-    if (viewModel.getUserScore() != null && viewModel.getUserScore().toString().isNotEmpty()) {
         questionIndex.value = viewModel.getUserScore()
-    }
+
 
     if (viewModel.data.value.loading == true) {
         CircularProgressIndicator(modifier = Modifier.size(30.dp))
